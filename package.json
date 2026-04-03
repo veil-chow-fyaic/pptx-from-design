@@ -1,9 +1,0 @@
-{
-  "name": "pptx-from-design",
-  "version": "3.0.0",
-  "description": "Design-first PPTX generator skill — HTML mockup → PptxGenJS compilation",
-  "private": true,
-  "dependencies": {
-    "pptxgenjs": "^3.12"
-  }
-}
