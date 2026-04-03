@@ -1,0 +1,4 @@
+node_modules/
+slides/output/
+*.pptx
+!slides/output/.gitkeep
