@@ -1,1 +1,4 @@
 node_modules/
+slides/output/
+slides/package-lock.json
+slides/package.json
