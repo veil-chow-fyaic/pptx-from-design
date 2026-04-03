@@ -1,9 +1,9 @@
 ---
 name: pptx-from-design
 description: "Design-first PPTX generator: creates visually stunning presentations by designing HTML mockups first, then compiling to PPTX via PptxGenJS. Use this skill when the user wants to make a PPT/PPTX/PowerPoint/slide deck with high design quality, or says things like '做个ppt'、'做一份演示文稿'、'生成slides'、'make a presentation' with source material provided. Triggers on any PPT creation request where design quality matters — even if the user just says '用这个做个PPT'. Always prefer this skill over plain pptx-generator when the user provides content/material and wants a polished result."
-license: MIT
+license: See LICENSE.txt for complete terms
 metadata:
-  version: "2.1"
+  version: "3.0.0"
   category: productivity
 ---
 
@@ -43,7 +43,7 @@ Following the design guide, commit to a **bold, specific** aesthetic:
 - **Creative** → experimental layouts, bold color clashes, asymmetric
 
 Lock in design decisions:
-- **Color palette**: from pptx-reference palettes, or topic-specific
+- **Color palette**: from [references/pptxgenjs.md](references/pptxgenjs.md) palettes, or topic-specific
 - **Typography**: Chinese = Microsoft YaHei (PPTX compat); English display font = pick something memorable
 - **Layout system**: card-based / asymmetric / editorial — pick one
 - **Decorative motifs**: pick 2-3, reuse consistently
@@ -71,7 +71,8 @@ Present the HTML to the user. Wait for approval before Phase 2.
 
 ## Phase 2: PPTX Compilation
 
-Read [references/pptx-reference.md](references/pptx-reference.md) for PptxGenJS API reference, design patterns, and QA workflow.
+Read [references/pptxgenjs.md](references/pptxgenjs.md) for PptxGenJS API reference (shapes, text, icons, charts, shadows, pitfalls).
+Read [references/editing.md](references/editing.md) for XML-based editing workflow (useful for QA fixes on compiled PPTX).
 
 ### 2.1 Set Up Working Directory
 
@@ -105,8 +106,9 @@ cd slides && npm install pptxgenjs && node compile.js
 
 ### 2.4 QA
 
-Follow the QA checklist in [references/pptx-reference.md](references/pptx-reference.md):
-- Convert to images and inspect with subagents for fresh eyes
+Follow the QA workflow from [references/pptxgenjs.md](references/pptxgenjs.md) (QA section) and [references/editing.md](references/editing.md):
+- Convert to images: `python scripts/office/soffice.py --headless --convert-to pdf output.pptx && pdftoppm -jpeg -r 150 output.pdf slide`
+- Inspect with subagents for fresh eyes
 - Fix-and-verify loop — do not declare success after just one pass
 
 ### 2.5 Deliver
@@ -121,19 +123,28 @@ Tell the user where both files are:
 
 ```
 pptx-from-design/
-├── SKILL.md                          ← this file
-├── references/
-│   ├── design-guide.md               ← slide design principles (Phase 1)
-│   ├── html-to-pptx-mapping.md       ← HTML→PPTX capability boundary
-│   └── pptx-reference.md             ← PptxGenJS API + QA (Phase 2)
-├── scripts/
-│   ├── compile.js                    ← compile entry point template
-│   └── slide-template.js             ← per-slide file template
+├── SKILL.md
+├── LICENSE.txt
 ├── package.json
+├── requirements.txt               ← Python dependencies (QA scripts)
+├── references/
+│   ├── design-guide.md            ← slide design principles (Phase 1)
+│   ├── html-to-pptx-mapping.md   ← HTML→PPTX capability boundary
+│   ├── pptxgenjs.md               ← PptxGenJS full API + design + QA (Phase 2)
+│   └── editing.md                 ← XML editing workflow (QA fixes)
+├── scripts/
+│   ├── compile.js                 ← PPTX compile entry point
+│   ├── slide-template.js          ← per-slide JS template
+│   ├── add_slide.py               ← duplicate/add slides to PPTX
+│   ├── clean.py                   ← remove orphaned files
+│   ├── thumbnail.py               ← visual grid of slides
+│   └── office/
+│       ├── soffice.py             ← LibreOffice headless conversion
+│       ├── unpack.py              ← extract PPTX to XML
+│       ├── pack.py                ← repack XML to PPTX
+│       ├── validate.py            ← validate PPTX structure
+│       ├── helpers/               ← merge_runs, simplify_redlines
+│       ├── schemas/               ← XSD schemas (ISO, ECMA, Microsoft)
+│       └── validators/            ├── base, docx, pptx, redlining
 └── .gitignore
 ```
-
-## Dependency
-
-- `pptxgenjs` (declared in package.json, required for Phase 2)
-- System tools for QA: LibreOffice, Poppler, markitdown (optional, for visual QA only)
